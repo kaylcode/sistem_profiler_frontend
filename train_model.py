@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 import joblib
 import numpy as np
+from sklearn.metrics import classification_report
 
 # Fungsi konversi nilai huruf ke angka
 def convert_grade_to_score(grade):
@@ -57,19 +58,30 @@ def train_and_export_models(merged_data):
     )
 
     # Training Graduation Model
-    X_train_grad, X_test_grad, y_train_grad, y_test_grad = train_test_split(X[['ipk_mahasiswa', 'nilai_rata_rata']], y_graduation, test_size=0.3, random_state=42)
-    graduation_model = RandomForestClassifier(random_state=42)
+    X_train_grad, X_test_grad, y_train_grad, y_test_grad = train_test_split(
+        X[['ipk_mahasiswa', 'nilai_rata_rata']], y_graduation, test_size=0.3, random_state=0
+    )
+    graduation_model = RandomForestClassifier(n_estimators=100, random_state=0)
     graduation_model.fit(X_train_grad, y_train_grad)
     joblib.dump(graduation_model, 'student_graduation_model.pkl')
 
     # Training Achievement Model
-    X_train_ach, X_test_ach, y_train_ach, y_test_ach = train_test_split(X, y_achievement, test_size=0.3, random_state=42)
-    achievement_model = RandomForestClassifier(random_state=42)
+    X_train_ach, X_test_ach, y_train_ach, y_test_ach = train_test_split(X, y_achievement, test_size=0.3, random_state=0)
+    achievement_model = RandomForestClassifier(n_estimators=100, random_state=0)
     achievement_model.fit(X_train_ach, y_train_ach)
     joblib.dump(achievement_model, 'student_achievement_model.pkl')
+
+    # Predict and evaluate Graduation Model
+    y_pred_grad = graduation_model.predict(X_test_grad)
+    print('Graduation: ' + classification_report(y_test_grad, y_pred_grad))
+
+    # Predict and evaluate Achievement Model
+    y_pred_ach = achievement_model.predict(X_test_ach)
+    print('Achievement: ' + classification_report(y_test_ach, y_pred_ach))
 
     print("Training completed and models exported.")
 
 # Run the data loading, cleaning, and model training
 merged_data = load_and_clean_data()
+
 train_and_export_models(merged_data)
