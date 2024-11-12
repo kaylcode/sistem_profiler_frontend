@@ -8,4 +8,4 @@ Sistem Profiler - kecerdasan buatan
 - hostname adalah: http://localhost:8000/
 - endpoint ada 2 yaitu: /students atau http://localhost:8000/students untuk dapatkan list semua mahasiswa
 - /predict atau http://localhost:8000/predict untuk profiling mahasiswa, diharapkan agar mengirimkan parameter NPM dengan metode post
-- pip install pandas scikit-learn fastapi uvicorn joblib openpyxl
+- pip install pandas scikit-learn fastapi uvicorn joblib openpyxl flask
