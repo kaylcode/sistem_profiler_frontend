@@ -1,4 +1,3 @@
-// src/Sidebar.js
 import React from 'react';
 import {
   CDBSidebar,
@@ -11,7 +10,7 @@ import { NavLink } from 'react-router-dom';
 
 const Sidebar = () => {
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'scroll initial' }}>
+    <div style={{ position: 'fixed', height: '100vh', width: '200px', zIndex: 100 }}>
       <CDBSidebar textColor="#fff" backgroundColor="#333">
         <CDBSidebarHeader prefix={<i className="fa fa-bars fa-large"></i>}>
           <a href="/" className="text-decoration-none" style={{ color: 'inherit' }}>
@@ -24,20 +23,14 @@ const Sidebar = () => {
             <NavLink exact to="/" activeClassName="activeClicked">
               <CDBSidebarMenuItem icon="columns">Dashboard</CDBSidebarMenuItem>
             </NavLink>
-            <NavLink exact to="/Kategorisasi" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="address-card" aria-hidden="true">Kategorisasi</CDBSidebarMenuItem>
+            {/* <NavLink exact to="/Kategorisasi" activeClassName="activeClicked">
+              <CDBSidebarMenuItem icon="address-card">Kategorisasi</CDBSidebarMenuItem>
             </NavLink>
             <NavLink exact to="/Hasil" activeClassName="activeClicked">
               <CDBSidebarMenuItem icon="chart-line">Hasil</CDBSidebarMenuItem>
-            </NavLink>
+            </NavLink> */}
           </CDBSidebarMenu>
         </CDBSidebarContent>
-
-        {/* <CDBSidebarFooter style={{ textAlign: 'center' }}>
-          <div style={{ padding: '20px 5px' }}>
-            Sidebar Footer
-          </div>
-        </CDBSidebarFooter> */}
       </CDBSidebar>
     </div>
   );

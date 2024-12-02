@@ -1,57 +1,123 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Button, Badge, Pagination, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const TablePage = () => {
+  const [students, setStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [majorFilter, setMajorFilter] = useState("");
-  const [sortOption, setSortOption] = useState("name"); // Default sort by name
+  const [sortOption, setSortOption] = useState("name");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8; // Set number of items per page
 
-  const navigate = useNavigate(); // Hook untuk navigasi
+  const navigate = useNavigate();
 
-  const students = [
-    { name: "Olivia Rhye", npm: "2031122", status: "Lulus", major: "Sistem Informasi", gpa: 3.8 },
-    { name: "Phoenix Baker", npm: "2341155", status: "Aktif", major: "Manajemen", gpa: 3.78 },
-    { name: "Candice Wu", npm: "2351151", status: "NonAktif", major: "Hukum", gpa: 3.87 },
-    { name: "Natali Craig", npm: "2461165", status: "Aktif", major: "Teknik Sipil", gpa: 3.98 },
-    { name: "Drew Cano", npm: "2111546", status: "Aktif", major: "Teknik Informatika", gpa: 3.96 },
-    { name: "Nayara", npm: "2121546", status: "Aktif", major: "Akuntansi", gpa: 3.76 },
-    { name: "Giandra", npm: "2101546", status: "Aktif", major: "Arsitektur", gpa: 3.86 },
-    { name: "Vania", npm: "2271546", status: "Aktif", major: "Pariwisata", gpa: 3.56 },
-  ];
+  // Fetch data from API
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:8000/students")
+      .then((response) => {
+        const validatedData = response.data.map((student) => ({
+          ...student,
+          ipk_mahasiswa: student.ipk_mahasiswa || 0, // Default IPK if null
+        }));
+        setStudents(validatedData);
+      })
+      .catch((error) => {
+        console.error("Error fetching students:", error);
+      });
+  }, []);
 
   const getStatusBadge = (status) => {
     switch (status) {
       case "Lulus":
-        return <Badge bg="success">Lulus</Badge>;
+        return <Badge bg="success">{status}</Badge>;
       case "Aktif":
-        return <Badge bg="primary">Aktif</Badge>;
+        return <Badge bg="primary">{status}</Badge>;
       case "NonAktif":
-        return <Badge bg="danger">NonAktif</Badge>;
+        return <Badge bg="danger">{status}</Badge>;
       default:
-        return <Badge bg="secondary">Unknown</Badge>;
+        return <Badge bg="secondary">{status}</Badge>;
     }
   };
 
-  const uniqueMajors = [...new Set(students.map((student) => student.major))];
+  const uniqueMajors = [...new Set(students.map((student) => student.prodi_mahasiswa))];
 
   const filteredStudents = students
     .filter(
       (student) =>
-        (student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          student.npm.includes(searchTerm)) &&
-        (statusFilter === "" || student.status === statusFilter) &&
-        (majorFilter === "" || student.major === majorFilter)
+        (student.nama_mahasiswa.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          student.npm_mahasiswa.includes(searchTerm)) &&
+        (statusFilter === "" || student.status_mahasiswa === statusFilter) &&
+        (majorFilter === "" || student.prodi_mahasiswa === majorFilter)
     )
     .sort((a, b) => {
       if (sortOption === "name") {
-        return a.name.localeCompare(b.name);
+        return a.nama_mahasiswa.localeCompare(b.nama_mahasiswa);
       } else if (sortOption === "gpa") {
-        return b.gpa - a.gpa;
+        return (b.ipk_mahasiswa || 0) - (a.ipk_mahasiswa || 0); // Sort by GPA
       }
       return 0;
     });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+  const currentPageData = filteredStudents.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Fungsi untuk memprediksi data mahasiswa
+  const predictStudentStatus = (npm) => {
+    const formData = new FormData();
+    formData.append('npm_mahasiswa',npm)
+    axios
+      .post("http://127.0.0.1:8000/predict",formData )
+      .then((response) => {
+        console.log('response',response.data)
+        navigate("/kategorisasi", { state: response.data });
+      })
+      .catch((error) => {
+        console.log('error',error)
+        console.error("Error predicting student status:", error);
+        alert("Gagal melakukan prediksi. Silakan coba lagi.");
+      });
+  };
+
+  // Generate pagination items
+  const pageItems = [];
+  const maxVisiblePages = 10; // Maximum number of visible pages
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+  if (endPage - startPage < maxVisiblePages - 1) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+
+  for (let page = startPage; page <= endPage; page++) {
+    pageItems.push(
+      <Pagination.Item
+        key={page}
+        active={page === currentPage}
+        onClick={() => handlePageChange(page)}
+      >
+        {page}
+      </Pagination.Item>
+    );
+  }
+
+  if (startPage > 1) {
+    pageItems.unshift(<Pagination.Ellipsis key="start-ellipsis" />);
+  }
+  if (endPage < totalPages) {
+    pageItems.push(<Pagination.Ellipsis key="end-ellipsis" />);
+  }
 
   return (
     <div>
@@ -109,23 +175,19 @@ const TablePage = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredStudents.map((student, index) => (
+          {currentPageData.map((student, index) => (
             <tr key={index}>
               <td>
-                {student.name} <br /> {student.npm}
+                {student.nama_mahasiswa} <br /> {student.npm_mahasiswa}
               </td>
-              <td>{getStatusBadge(student.status)}</td>
-              <td>{student.major}</td>
-              <td>{student.gpa.toFixed(2)}</td>
+              <td>{getStatusBadge(student.status_mahasiswa)}</td>
+              <td>{student.prodi_mahasiswa}</td>
+              <td>{(student.ipk_mahasiswa || 0).toFixed(2)}</td> {/* Validasi IPK */}
               <td>
                 <Button
                   variant="outline-primary"
                   size="sm"
-                  onClick={() =>
-                    navigate("/kategorisasi", {
-                      state: student, // Kirim data mahasiswa ke halaman Kategorisasi
-                    })
-                  }
+                  onClick={() => predictStudentStatus(student.npm_mahasiswa)}
                 >
                   Kategorisasi
                 </Button>
@@ -136,10 +198,15 @@ const TablePage = () => {
       </Table>
 
       <Pagination>
-        <Pagination.Prev />
-        <Pagination.Item active>{1}</Pagination.Item>
-        <Pagination.Item>{2}</Pagination.Item>
-        <Pagination.Next />
+        <Pagination.Prev
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        />
+        {pageItems}
+        <Pagination.Next
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        />
       </Pagination>
     </div>
   );
