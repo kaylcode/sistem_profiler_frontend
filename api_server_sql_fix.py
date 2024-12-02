@@ -86,16 +86,46 @@ def predict_student_status():
         X_new_achievement = np.array([[ipk_mahasiswa, nilai_rata_rata, keterlibatan_kegiatan]])
         achievement_prob = achievement_model.predict_proba(X_new_achievement)[0][1] * 100
 
+         # Mengambil data mata kuliah mahasiswa
+        with engine.connect() as connection:
+            courses_query = text("""
+                SELECT tahun_semester,nama_matkul, kategori_matakuliah, kode_nilai,  
+                CASE 
+                    WHEN kode_nilai = 'A' THEN 4.0
+                    WHEN kode_nilai = 'B' THEN 3.0
+                    WHEN kode_nilai = 'C' THEN 2.0
+                    WHEN kode_nilai = 'D' THEN 1.0
+                    WHEN kode_nilai = 'E' THEN 0.0
+                END AS nilai,  jenis_semester, 
+                total_hadir, total_terlaksana
+                FROM data_krs_mahasiswa
+                WHERE npm_mahasiswa = :npm
+                AND kode_nilai IS NOT NULL
+            """)
+            course_list = [dict(row._mapping) for row in connection.execute(courses_query, {"npm": npm})]
+
+
+        # Mengambil data kegiatan mahasiswa
+        with engine.connect() as connection:
+            activities_query = text("""
+                SELECT nama_kegiatan, tingkat_kegiatan, tanggal_kegiatan
+                FROM data_kegiatan_mahasiswa
+                WHERE npm_mahasiswa = :npm
+            """)
+            activity_list = [dict(row._mapping) for row in connection.execute(activities_query, {"npm": npm})]
         # Kembalikan hasil prediksi
         return jsonify({
             "npm_mahasiswa": npm,
             "nama_mahasiswa": student_data['nama_mahasiswa'],
             "status_mahasiswa": student_data['status_mahasiswa'],
             "prodi_mahasiswa": student_data['prodi_mahasiswa'],
+            'nilai_rata_rata': student_data['nilai_rata_rata'],
             "ipk_mahasiswa": float(ipk_mahasiswa),
             "persentase_kelulusan": float(graduation_prob),
             "persentase_berprestasi": float(achievement_prob),
             "keterlibatan_kegiatan": int(keterlibatan_kegiatan),
+             "daftar_mata_kuliah": course_list,
+            "daftar_kegiatan": activity_list,
         })
 
     except Exception as e:
