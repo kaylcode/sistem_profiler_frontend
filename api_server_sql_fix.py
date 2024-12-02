@@ -89,15 +89,15 @@ def predict_student_status():
          # Mengambil data mata kuliah mahasiswa
         with engine.connect() as connection:
             courses_query = text("""
-                SELECT tahun_semester,nama_matkul, kategori_matakuliah, kode_nilai,  
+                SELECT nama_matkul, kategori_matakuliah, tahun_semester, kode_nilai,  
                 CASE 
                     WHEN kode_nilai = 'A' THEN 4.0
                     WHEN kode_nilai = 'B' THEN 3.0
                     WHEN kode_nilai = 'C' THEN 2.0
                     WHEN kode_nilai = 'D' THEN 1.0
                     WHEN kode_nilai = 'E' THEN 0.0
-                END AS nilai,  jenis_semester, 
-                total_hadir, total_terlaksana
+                END AS nilai,  jenis_semester, sks_matakuliah,
+                total_hadir, total_terlaksana, total_tidak_hadir, total_pertemuan
                 FROM data_krs_mahasiswa
                 WHERE npm_mahasiswa = :npm
                 AND kode_nilai IS NOT NULL
