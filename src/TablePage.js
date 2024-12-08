@@ -19,7 +19,9 @@ const TablePage = () => {
     axios
       .get("http://127.0.0.1:8000/students")
       .then((response) => {
-        const validatedData = response.data.map((student) => ({
+        console.log('response',response.data)
+        const data = response.data.students
+        const validatedData = data.map((student) => ({
           ...student,
           ipk_mahasiswa: student.ipk_mahasiswa || 0, // Default IPK if null
         }));
@@ -121,6 +123,7 @@ const TablePage = () => {
 
   return (
     <div>
+      {/* Filter and Search Section */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <input
           type="text"
@@ -129,7 +132,7 @@ const TablePage = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-
+  
         <Form.Select
           className="w-25"
           value={statusFilter}
@@ -140,7 +143,7 @@ const TablePage = () => {
           <option value="Aktif">Aktif</option>
           <option value="NonAktif">NonAktif</option>
         </Form.Select>
-
+  
         <Form.Select
           className="w-25"
           value={majorFilter}
@@ -153,7 +156,7 @@ const TablePage = () => {
             </option>
           ))}
         </Form.Select>
-
+  
         <Form.Select
           className="w-25"
           value={sortOption}
@@ -163,51 +166,57 @@ const TablePage = () => {
           <option value="gpa">Sort by GPA (High to Low)</option>
         </Form.Select>
       </div>
-
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Name/NPM</th>
-            <th>Status</th>
-            <th>Jurusan</th>
-            <th>IPK</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentPageData.map((student, index) => (
-            <tr key={index}>
-              <td>
-                {student.nama_mahasiswa} <br /> {student.npm_mahasiswa}
-              </td>
-              <td>{getStatusBadge(student.status_mahasiswa)}</td>
-              <td>{student.prodi_mahasiswa}</td>
-              <td>{(student.ipk_mahasiswa || 0).toFixed(2)}</td> {/* Validasi IPK */}
-              <td>
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={() => predictStudentStatus(student.npm_mahasiswa)}
-                >
-                  Kategorisasi
-                </Button>
-              </td>
+  
+      {/* Table and Pagination Wrapper */}
+      <div className="table-wrapper">
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Name/NPM</th>
+              <th>Status</th>
+              <th>Jurusan</th>
+              <th>IPK</th>
+              <th>Aksi</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
-
-      <Pagination>
-        <Pagination.Prev
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        />
-        {pageItems}
-        <Pagination.Next
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        />
-      </Pagination>
+          </thead>
+          <tbody>
+            {currentPageData.map((student, index) => (
+              <tr key={index}>
+                <td>
+                  {student.nama_mahasiswa} <br /> {student.npm_mahasiswa}
+                </td>
+                <td>{getStatusBadge(student.status_mahasiswa)}</td>
+                <td>{student.prodi_mahasiswa}</td>
+                <td>{(student.ipk_mahasiswa || 0).toFixed(2)}</td> {/* Validasi IPK */}
+                <td>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => predictStudentStatus(student.npm_mahasiswa)}
+                  >
+                    Detail
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+  
+        {/* Pagination Centered */}
+        <div className="d-flex justify-content-center mt-3">
+          <Pagination>
+            <Pagination.Prev
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            />
+            {pageItems}
+            <Pagination.Next
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            />
+          </Pagination>
+        </div>
+      </div>
     </div>
   );
 };
