@@ -64,3 +64,4 @@ const Card = ({ title, bgColor }) => {
 };
 
 export default Card;
+ 

@@ -13,7 +13,7 @@ export default function BasicPie({data=exampleData}) {
       series={[
         {
           data,
-        },
+        }, 
       ]}
       
       width={600}

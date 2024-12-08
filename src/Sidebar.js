@@ -4,7 +4,7 @@ import {
   CDBSidebarHeader,
   CDBSidebarContent,
   CDBSidebarMenu,
-  CDBSidebarMenuItem,
+  CDBSidebarMenuItem, 
 } from 'cdbreact';
 import { NavLink } from 'react-router-dom';
 

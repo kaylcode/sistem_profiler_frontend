@@ -99,7 +99,7 @@ const KegiatanMahasiswa = ({ data }) => {
       {/* Right Column: Pie Chart */}
       <Grid container
     justifyContent="center"
-    alignItems="center"
+    // alignItems="center"
     style={{ minHeight: '100%' }} item xs={4} md={4} lg={4}>
         <BasicPie data={dataPieChart} />
       </Grid>
@@ -130,7 +130,10 @@ const KelulusanMahasiswa = ({ kelulusan }) => {
         <thead>
           <tr>
             <th>No</th>
+            <th>Tahun</th>
+            <th>Semester</th>
             <th>Nama Mata Kuliah</th>
+            <th>SKS</th>
             <th>Nilai</th>
             <th>Kategori</th>
           </tr>
@@ -139,7 +142,10 @@ const KelulusanMahasiswa = ({ kelulusan }) => {
           {currentData.map((row, index) => (
             <tr key={index}>
               <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+              <td>{row.tahun_semester}</td>
+              <td>{row.jenis_semester}</td>
               <td>{row.nama_matkul}</td>
+              <td>{row.sks_matakuliah}</td>
               <td>{row.kode_nilai}</td>
               <td>{row.kategori_matakuliah}</td>
             </tr>
@@ -198,16 +204,7 @@ const Kategorisasi = () => {
 
   return (
     <Container>
-      <h1
-        style={{
-          color: "black",
-          padding: "10px 20px",
-          borderRadius: "5px",
-          textAlign: "center",
-        }}
-      >
-        Kategorisasi
-      </h1>
+
 
       {/* Card Section with Flexbox for horizontal layout */}
       <div className="d-flex flex-wrap justify-content-between mb-4">

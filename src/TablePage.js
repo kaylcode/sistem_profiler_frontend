@@ -120,8 +120,8 @@ const TablePage = () => {
   if (endPage < totalPages) {
     pageItems.push(<Pagination.Ellipsis key="end-ellipsis" />);
   }
-
-  return (
+ 
+  return ( 
     <div>
       {/* Filter and Search Section */}
       <div className="d-flex justify-content-between align-items-center mb-3">

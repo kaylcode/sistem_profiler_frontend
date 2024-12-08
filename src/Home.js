@@ -3,7 +3,7 @@ import React from 'react';
 import TablePage from './TablePage';
 
 const Home = () => {
-  return (
+  return ( 
     <div>
       <TablePage />
     </div>

@@ -77,7 +77,7 @@ const ChartIPSemester = ({ data }) => {
         bodyColor: '#fff', // Warna isi tooltip
       }
     }
-  };
+  }; 
 
   return (
     <div style={{ width: '100%', height: '600px' }}>

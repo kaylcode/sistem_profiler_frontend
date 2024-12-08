@@ -7,3 +7,4 @@ const Hasil = () => {
 
 export default Hasil;
 
+ 
