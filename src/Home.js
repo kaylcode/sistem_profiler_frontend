@@ -6,7 +6,7 @@ const Home = () => {
   return ( 
     <div>
       <TablePage />
-    </div>
+    </div> 
   );
 };
 

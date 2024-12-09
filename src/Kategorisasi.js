@@ -96,7 +96,7 @@ const KegiatanMahasiswa = ({ data }) => {
         </Pagination>
       </Grid>
 
-      {/* Right Column: Pie Chart */}
+      {/* Right Column: Pie Chart */} 
       <Grid container
     justifyContent="center"
     // alignItems="center"

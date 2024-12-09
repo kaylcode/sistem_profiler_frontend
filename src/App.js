@@ -10,7 +10,7 @@ function App() {
   return (
     <Router>
       <div className="App" style={{ display: 'flex' }}>
-        {/* Sidebar */} 
+        {/* Sidebar */}  
         <Sidebar />
 
         {/* Konten Utama */}

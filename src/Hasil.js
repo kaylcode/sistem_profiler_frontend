@@ -5,6 +5,6 @@ const Hasil = () => {
   return <h1>Hasil Kategorisasi</h1>;
 };
 
-export default Hasil;
+export default Hasil; 
 
  

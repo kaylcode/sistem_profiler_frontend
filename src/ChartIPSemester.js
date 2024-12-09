@@ -79,7 +79,7 @@ const ChartIPSemester = ({ data }) => {
     }
   }; 
 
-  return (
+  return ( 
     <div style={{ width: '100%', height: '600px' }}>
       <h3>Chart IP Semester</h3>
       <Bar style={{width:"100%"}} data={chartData} options={chartOptions} /> {/* Menggunakan Bar chart */}

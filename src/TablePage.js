@@ -122,7 +122,7 @@ const TablePage = () => {
   }
  
   return ( 
-    <div>
+    <div> 
       {/* Filter and Search Section */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <input

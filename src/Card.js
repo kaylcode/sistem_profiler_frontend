@@ -61,7 +61,7 @@ const Card = ({ title, bgColor }) => {
       </button>
     </div>
   );
-};
+}; 
 
 export default Card;
  
